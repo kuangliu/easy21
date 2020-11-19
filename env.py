@@ -24,10 +24,8 @@ class State:
 
 
 class Env:
-    dealer_sum = 0
-
     def __init__(self):
-        pass
+        self.dealer_sum = 0
 
     def step(self, state, action):
         if self.dealer_sum == 0:
@@ -43,7 +41,7 @@ class Env:
                 print('Player busted, player lose')
                 reward = -1
         else:
-            print('Play STICK\n\nDealer turn:')
+            print('Play STICK Dealer turn:')
             while self.dealer_sum < 17:  # dealer always stick on sum of 17 or greater
                 dealer_card = self.draw_one_card()
                 self.dealer_sum += dealer_card.value
@@ -71,22 +69,3 @@ def simple_policy(state):
         return Action.STICK
     else:
         return Action.HIT
-
-
-def play_once():
-    print('========= Game Start =========')
-    env = Env()
-    dealer_first_card_value = random.randint(1, 10)
-    player_first_card_value = random.randint(1, 10)
-    state = State(dealer_first_card_value, player_first_card_value)
-    print('Dealer first card: %d, player first card: %d\n' %
-          (dealer_first_card_value, player_first_card_value))
-    while True:
-        action = simple_policy(state)
-        state, reward = env.step(state, action)
-        if reward != 0:
-            break
-
-
-if __name__ == '__main__':
-    play_once()
