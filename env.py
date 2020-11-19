@@ -73,8 +73,9 @@ def simple_policy(state):
         return Action.HIT
 
 
-def play_once(env):
+def play_once():
     print('========= Game Start =========')
+    env = Env()
     dealer_first_card_value = random.randint(1, 10)
     player_first_card_value = random.randint(1, 10)
     state = State(dealer_first_card_value, player_first_card_value)
@@ -88,5 +89,4 @@ def play_once(env):
 
 
 if __name__ == '__main__':
-    env = Env()
-    play_once(env)
+    play_once()
