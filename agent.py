@@ -56,17 +56,10 @@ def play_once(agent):
         state, reward = env.step(state, action)
         if reward != 0:
             break
-    agent.print_history()
-
     if reward == 1:
         agent.update(1)
     elif reward == -1:
         agent.update(0)
-
-    for state, action in agent.history:
-        i, j = state.dealer_first_card, state.player_sum
-        print(agent.Q[i, j, :])
-
     agent.reset()
     return reward
 
@@ -75,7 +68,7 @@ if __name__ == '__main__':
     agent = MCAgent()
     player_win = player_lose = player_tie = 0
     plotter = Plotter()
-    for i in range(10000):
+    for i in range(100000):
         print(i)
         ret = play_once(agent)
         if ret == 1:

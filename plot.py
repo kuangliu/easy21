@@ -9,19 +9,17 @@ class Plotter:
         self.ax = plt.axes(projection='3d')
 
     def plot(self, Q):
-        x = []
-        y = []
-        z = []
-        for i in range(Q.shape[0]):
-            for j in range(Q.shape[1]):
+        for i in range(1, Q.shape[0]):
+            x = []
+            y = []
+            z = []
+            for j in range(1, Q.shape[1]):
                 q = max(Q[i, j, 0], Q[i, j, 1])
                 x.append(i)
                 y.append(j)
                 z.append(q)
-        self.plot_xyz(x, y, z)
-
-    def plot_xyz(self, x, y, z):
-        self.ax.scatter3D(x, y, z, marker='o')
+            self.ax.plot3D(x, y, z, 'gray')
+            self.ax.scatter3D(x, y, z, marker='o')
 
     def clear(self):
         self.ax.clear()
