@@ -1,5 +1,7 @@
 import random
 import numpy as np
+
+from plot import Plotter
 from env import State, Env, Action
 
 
@@ -7,18 +9,22 @@ class MCAgent:
     '''Monte-Carlo control agent.'''
 
     def __init__(self):
-        self.alpha = 0.01
         self.Q = np.zeros((11, 22, 2))  # dealer_first_card, player_sum, action
+        self.N = np.zeros((11, 22, 2))  # N(s,a)
         self.history = []
 
     def policy(self, state):
         '''Epsilon greedy policy.'''
-        eps = 0.1
+        i, j = state.dealer_first_card, state.player_sum
+        Ns = self.N.sum(2)      # N(s)
+        eps = 100 / (100 + Ns[i, j])  # eps = N0 / (N0 + N(s)) where N0 = 100
         if random.random() < eps:
             action = random.choice([Action.HIT, Action.STICK])
         else:
-            Q = self.Q[state.dealer_first_card, state.player_sum]
+            Q = self.Q[i, j]
             action = Action.HIT if Q[0] >= Q[1] else Action.STICK
+        k = [Action.HIT, Action.STICK].index(action)
+        self.N[i, j, k] += 1
         self.history.append([state, action])
         return action
 
@@ -26,7 +32,15 @@ class MCAgent:
         for state, action in self.history:
             i, j = state.dealer_first_card, state.player_sum
             k = [Action.HIT, Action.STICK].index(action)
-            self.Q[i, j, k] += self.alpha * (reward - self.Q[i, j, k])
+            alpha = 1. / self.N[i, j, k]
+            self.Q[i, j, k] += alpha * (reward - self.Q[i, j, k])
+
+    def print_history(self):
+        for state, action in self.history:
+            print(state.dealer_first_card, state.player_sum, action)
+
+    def reset(self):
+        self.history = []
 
 
 def play_once(agent):
@@ -42,17 +56,27 @@ def play_once(agent):
         state, reward = env.step(state, action)
         if reward != 0:
             break
+    agent.print_history()
+
     if reward == 1:
         agent.update(1)
     elif reward == -1:
         agent.update(0)
+
+    for state, action in agent.history:
+        i, j = state.dealer_first_card, state.player_sum
+        print(agent.Q[i, j, :])
+
+    agent.reset()
     return reward
 
 
 if __name__ == '__main__':
     agent = MCAgent()
     player_win = player_lose = player_tie = 0
-    for i in range(1000):
+    plotter = Plotter()
+    for i in range(10000):
+        print(i)
         ret = play_once(agent)
         if ret == 1:
             player_win += 1
@@ -61,3 +85,5 @@ if __name__ == '__main__':
         else:
             player_tie += 1
     print(player_win, player_lose, player_tie)
+    plotter.plot(agent.Q)
+    plotter.show()
