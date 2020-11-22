@@ -26,13 +26,3 @@ class Plotter:
 
     def show(self):
         plt.show()
-
-
-if __name__ == '__main__':
-    plotter = Plotter()
-    z = 15 * np.random.random(100)
-    x = np.sin(z) + 0.1 * np.random.randn(100)
-    y = np.cos(z) + 0.1 * np.random.randn(100)
-    plotter.plot_xyz(x, y, z)
-    plotter.clear()
-    plotter.show()
